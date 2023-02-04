@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { PlanetsService } from 'src/planets/planets.service';
 
 export interface CreateUserDto {
     name: string;
@@ -8,7 +9,10 @@ export interface CreateUserDto {
 @Controller('users')
 export class UsersController {
 
-    constructor(@Inject(UsersService) private userService: UsersService) { }
+    constructor(
+        @Inject(UsersService) private userService: UsersService,
+        @Inject(PlanetsService) private planetsService: PlanetsService
+    ) { }
 
     @Get()
     index() {
@@ -16,7 +20,9 @@ export class UsersController {
     }
 
     @Post()
-    create(@Body() dto: CreateUserDto) {
-        return this.userService.create(dto.name);
+    async create(@Body() dto: CreateUserDto) {
+        const user = await this.userService.create(dto.name);
+        await this.planetsService.createInitialPlanet(user);
+        return user;
     }
 }
