@@ -12,12 +12,13 @@ import { Structure } from './planets/structures.entity';
 import { Ship } from './planets/fleet.entity';
 import { Resources } from './planets/resources.entity';
 import { Defense } from './planets/defense.entity';
+import { Technology } from './planets/technology.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      entities: [Defense, User, Planet, Structure, Resources, Resources, Ship],
+      entities: [Defense, User, Planet, Structure, Resources, Resources, Ship, Technology],
       synchronize: true,
       database: './data.db'
     }),

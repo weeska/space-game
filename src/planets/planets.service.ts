@@ -7,6 +7,7 @@ import { Structure, StructureType } from './structures.entity';
 import { Ship, ShipType } from './fleet.entity';
 import { Resources } from './resources.entity';
 import { Defense, DefenseType } from './defense.entity';
+import { Technology, TechnologyType } from './technology.entity';
 
 @Injectable()
 export class PlanetsService {
@@ -21,7 +22,9 @@ export class PlanetsService {
         @InjectRepository(Defense)
         private defensesRepository: Repository<Defense>,        
         @InjectRepository(Resources)
-        private resourcesRepository: Repository<Resources>,          
+        private resourcesRepository: Repository<Resources>,
+        @InjectRepository(Technology)
+        private technologiesRepository: Repository<Technology>,        
     ) { }
 
     async createInitialPlanet(user: User) {
@@ -85,6 +88,14 @@ export class PlanetsService {
                 planet: {
                     id: planetId
                 }
+            }
+        });
+    }
+
+    technologies(userId: number) {
+        return this.technologiesRepository.find({
+            where: {
+                userId,
             }
         });
     }
@@ -184,4 +195,38 @@ export class PlanetsService {
 
         return this.defensesRepository.save(defense);
     }
+
+    async researchTechnology(planetId: number, name: TechnologyType) {
+        const planet = await this.planetsRepository.findOne({
+            where: {
+                id: planetId
+            },
+            relations: {
+                user: true,
+            }
+        });
+        if(!planet) {
+            throw new Error(`planet ${planetId} not found`);
+        }
+        let tech: Technology | undefined = await this.technologiesRepository.findOne({
+            where: {
+                userId: planet.user.id,
+                name,
+            }
+        });
+
+        if(!tech) {
+            tech = new Technology();
+            tech.name = name;
+            tech.level = 1;
+            tech.userId = planet.user.id;
+
+        } else {
+            tech.level++;
+        }
+
+        return this.technologiesRepository.save(tech);
+    }
+
+    
 }

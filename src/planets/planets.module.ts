@@ -6,9 +6,10 @@ import { Structure } from './structures.entity';
 import { Ship } from './fleet.entity';
 import { Resources } from './resources.entity';
 import { Defense } from './defense.entity';
+import { Technology } from './technology.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Defense, Planet, Structure, Resources, Ship])],
+  imports: [TypeOrmModule.forFeature([Defense, Planet, Structure, Resources, Ship, Technology])],
   providers: [PlanetsService],
   exports: [PlanetsService]
 })
