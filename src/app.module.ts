@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { PlanetsController } from './planets/planets.controller';
 import { PlanetsModule } from './planets/planets.module';
 import { Planet } from './planets/planet.entity';
+import { UsersController } from './users/users.controller';
 
 @Module({
   imports: [
@@ -20,7 +20,6 @@ import { Planet } from './planets/planet.entity';
     UsersModule,
     PlanetsModule
   ],
-  controllers: [AppController, PlanetsController],
-  providers: [AppService],
+  controllers: [AppController, PlanetsController, UsersController],
 })
 export class AppModule {}
