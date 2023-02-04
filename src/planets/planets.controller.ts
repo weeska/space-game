@@ -3,6 +3,7 @@ import { PlanetsService } from './planets.service';
 import { ApiProperty } from '@nestjs/swagger';
 import { StructureType, StructureTypes } from './structures.entity';
 import { ShipType, ShipTypes } from './fleet.entity';
+import { DefenseType, DefenseTypes } from './defense.entity';
 
 export class BuildStructureDto {
     @ApiProperty({
@@ -25,7 +26,22 @@ export class BuildShipsDto {
 
     @ApiProperty()
     planetId: number;
+
 }
+
+export class BuildDefensesDto {
+    @ApiProperty({
+        enum: DefenseTypes,
+    })
+    name: DefenseType;
+
+    @ApiProperty()
+    amount: number;
+
+    @ApiProperty()
+    planetId: number;
+}
+
 
 @Controller('planets')
 export class PlanetsController {
@@ -64,5 +80,15 @@ export class PlanetsController {
     @Post('/:planetId/ships')
     buildShips(@Body() dto: BuildShipsDto) {
         return this.planetsService.buildShips(dto.planetId, dto.name, dto.amount);
+    }
+
+    @Get('/:planetId/defenses')
+    getDefenses(@Param('planetId') planetId: number) {
+        return this.planetsService.defenses(planetId);
+    }
+
+    @Post('/:planetId/defenses')
+    buildDefenses(@Body() dto: BuildDefensesDto) {
+        return this.planetsService.buildDefenses(dto.planetId, dto.name, dto.amount);
     }
 }

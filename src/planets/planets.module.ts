@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Structure } from './structures.entity';
 import { Ship } from './fleet.entity';
 import { Resources } from './resources.entity';
+import { Defense } from './defense.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Planet, Structure, Resources, Ship])],
+  imports: [TypeOrmModule.forFeature([Defense, Planet, Structure, Resources, Ship])],
   providers: [PlanetsService],
   exports: [PlanetsService]
 })

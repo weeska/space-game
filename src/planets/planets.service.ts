@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Structure, StructureType } from './structures.entity';
 import { Ship, ShipType } from './fleet.entity';
 import { Resources } from './resources.entity';
+import { Defense, DefenseType } from './defense.entity';
 
 @Injectable()
 export class PlanetsService {
@@ -17,6 +18,8 @@ export class PlanetsService {
         private structuresRepository: Repository<Structure>,
         @InjectRepository(Ship)
         private shipsRepository: Repository<Ship>,
+        @InjectRepository(Defense)
+        private defensesRepository: Repository<Defense>,        
         @InjectRepository(Resources)
         private resourcesRepository: Repository<Resources>,          
     ) { }
@@ -68,6 +71,16 @@ export class PlanetsService {
 
     ships(planetId: number) {
         return this.shipsRepository.find({
+            where: {
+                planet: {
+                    id: planetId
+                }
+            }
+        });
+    }
+
+    defenses(planetId: number) {
+        return this.defensesRepository.find({
             where: {
                 planet: {
                     id: planetId
@@ -138,5 +151,37 @@ export class PlanetsService {
         }
 
         return this.shipsRepository.save(ship);
+    }
+
+    async buildDefenses(planetId: number, name: DefenseType, amount: number) {
+        let defense: Defense | undefined = await this.defensesRepository.findOne({
+            where: {
+                planet: {
+                    id: planetId
+                },
+                name,
+            }
+        });
+
+        if(!defense) {
+            const planet = await this.planetsRepository.findOne({
+                where: {
+                    id: planetId
+                }
+            });
+
+            if(!planet) {
+                throw new Error(`planet ${planetId} not found`);
+            }
+            defense = new Defense();
+            defense.planet = planet;
+            defense.name = name;
+            defense.amount = amount;
+
+        } else {
+            defense.amount += amount;
+        }
+
+        return this.defensesRepository.save(defense);
     }
 }
