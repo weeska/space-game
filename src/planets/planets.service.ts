@@ -5,6 +5,7 @@ import { Planet } from './planet.entity';
 import { Repository } from 'typeorm';
 import { Structure, StructureType } from './structures.entity';
 import { Ship, ShipType } from './fleet.entity';
+import { Resources } from './resources.entity';
 
 @Injectable()
 export class PlanetsService {
@@ -15,13 +16,24 @@ export class PlanetsService {
         @InjectRepository(Structure)
         private structuresRepository: Repository<Structure>,
         @InjectRepository(Ship)
-        private shipsRepository: Repository<Ship>,        
+        private shipsRepository: Repository<Ship>,
+        @InjectRepository(Resources)
+        private resourcesRepository: Repository<Resources>,          
     ) { }
 
-    createInitialPlanet(user: User) {
+    async createInitialPlanet(user: User) {
         const planet = new Planet();
         planet.user = user;
         planet.name = `${user.name}'s Home`;
+
+        const resources = new Resources();
+        resources.metal = 2500;
+        resources.crystal = 1500;
+        resources.tritium = 500;
+        
+        await this.resourcesRepository.save(resources);
+
+        planet.resources = resources;
 
         return this.planetsRepository.save(planet);
     }
@@ -33,6 +45,14 @@ export class PlanetsService {
                     id: userId,
                 },
             },
+        });
+    }
+
+    resources(planetId: number) {
+        return this.resourcesRepository.findOne({
+            where: {
+                planetId
+            }
         });
     }
 

@@ -4,7 +4,9 @@ import { PlanetsService } from 'src/planets/planets.service';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-    @ApiProperty()
+    @ApiProperty({
+        example: 'Imperator'
+    })
     name: string;
 }
 

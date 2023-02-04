@@ -1,7 +1,8 @@
 
 import { User } from 'src/users/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Structure } from './structures.entity';
+import { Resources } from './resources.entity';
 
 @Entity()
 export class Planet {
@@ -16,4 +17,7 @@ export class Planet {
 
   @OneToMany(() => Structure, (structures) => structures.planet)
   structures: Structure[];
+
+  @OneToOne(() => Resources)
+  resources: Resources;
 }

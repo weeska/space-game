@@ -39,6 +39,11 @@ export class PlanetsController {
         return this.planetsService.planets(userId);
     }
 
+    @Get('/:planetId/resources')
+    getResources(@Param('planetId') planetId: number) {
+        return this.planetsService.resources(planetId);
+    }
+
     @Get('/:planetId/structures')
     getStructures(@Param('planetId') planetId: number) {
         return this.planetsService.structures(planetId);
