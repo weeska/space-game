@@ -4,7 +4,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { StructureType, StructureTypes } from './structures.entity';
 import { ShipType, ShipTypes } from './fleet.entity';
 import { DefenseType, DefenseTypes } from './defense.entity';
-import { TechnologyType, TechnologyTypes } from './technology.entity';
 
 export class BuildStructureDto {
     @ApiProperty({
@@ -37,16 +36,6 @@ export class BuildDefensesDto {
 
     @ApiProperty()
     amount: number;
-
-    @ApiProperty()
-    planetId: number;
-}
-
-export class ResearchTechnologyDto {
-    @ApiProperty({
-        enum: TechnologyTypes,
-    })
-    name: TechnologyType;
 
     @ApiProperty()
     planetId: number;
@@ -99,15 +88,5 @@ export class PlanetsController {
     @Post('/:planetId/defenses')
     buildDefenses(@Body() dto: BuildDefensesDto) {
         return this.planetsService.buildDefenses(dto.planetId, dto.name, dto.amount);
-    }
-
-    @Get('/:userId/tech')
-    getTechnologies(@Param('userId') userId: number) {
-        return this.planetsService.technologies(userId);
-    }
-
-    @Post('/:userId/tech')
-    research(@Body() dto: ResearchTechnologyDto) {
-        return this.planetsService.researchTechnology(dto.planetId, dto.name);
     }
 }

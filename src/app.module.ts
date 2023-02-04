@@ -27,4 +27,5 @@ import { Technology } from './planets/technology.entity';
   ],
   controllers: [AppController, PlanetsController, UsersController],
 })
-export class AppModule {}
+export class AppModule {
+}
