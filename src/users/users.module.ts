@@ -9,5 +9,6 @@ import { PlanetsModule } from 'src/planets/planets.module';
   imports: [TypeOrmModule.forFeature([User]), PlanetsModule],
   providers: [UsersService],
   controllers: [UsersController],
+  exports: [UsersService],
 })
 export class UsersModule { }

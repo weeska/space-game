@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PlanetsService } from 'src/planets/planets.service';
+import { ApiProperty } from '@nestjs/swagger';
 
-export interface CreateUserDto {
+export class CreateUserDto {
+    @ApiProperty()
     name: string;
 }
 

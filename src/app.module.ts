@@ -8,12 +8,14 @@ import { PlanetsController } from './planets/planets.controller';
 import { PlanetsModule } from './planets/planets.module';
 import { Planet } from './planets/planet.entity';
 import { UsersController } from './users/users.controller';
+import { Structure } from './planets/structures.entity';
+import { Ship } from './planets/fleet.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      entities: [User, Planet],
+      entities: [User, Planet, Structure, Ship],
       synchronize: true,
       database: './data.db'
     }),
