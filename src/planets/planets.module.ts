@@ -9,10 +9,12 @@ import { Defense } from './defense.entity';
 import { Technology } from './technology.entity';
 import { StructureJob } from './structure-job.entity';
 import { ResearchJob } from './research-job.entity';
+import { BuildTimeService } from './build-time.service';
+import { CostService } from './cost.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Defense, Planet, Structure, Resources, Ship, Technology, StructureJob, ResearchJob])],
-  providers: [PlanetsService],
+  providers: [PlanetsService, BuildTimeService, CostService],
   exports: [PlanetsService]
 })
 export class PlanetsModule {}

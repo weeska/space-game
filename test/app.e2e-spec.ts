@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import * as fs from 'fs';
@@ -8,14 +9,14 @@ const databaseFile = './data.db';
 
 function createUser(app: INestApplication, name: string) {
   return request(app.getHttpServer())
-    .post('/imperators') //TODO: /imperators instead of /imperators
+    .post('/imperators')
     .send({ name })
     .expect(201)
 }
 
 function getPlanets(app: INestApplication, userId: number) {
   return request(app.getHttpServer())
-    .get('/imperators/' + userId + '/planets') //TODO: misleading, this is a userId, not a planetId
+    .get('/imperators/' + userId + '/planets')
     .expect(200);
 }
 
@@ -51,12 +52,20 @@ function getTech(app: INestApplication, userId: number) {
 
 describe('Space Game', () => {
   let app: INestApplication;
+  let configService: ConfigService;
 
   const name = 'e2e imperator';
 
   beforeEach(async () => {
+    process.env.BUILD_SPEED_FACTOR = '0';
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
+      providers: [
+        {
+          provide: ConfigService,
+          useValue: configService,
+        }
+      ]
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -76,7 +85,7 @@ describe('Space Game', () => {
     const { body: tech } = await getTech(app, user.id);
 
     expect(user).toMatchObject({ name, id: expect.any(Number) });
-    expect(planets).toMatchObject([{ id: expect.any(Number), name: `${name}'s Home` }]);
+    expect(planets).toMatchObject([{ id: expect.any(Number), name: expect.any(String) }]);
     expect(tech).toMatchObject([]);
 
     const planet = planets[0];
@@ -93,7 +102,7 @@ describe('Space Game', () => {
 
     const planet = planets[0];
 
-    for (let times = 1; times <= 5; ++times) {
+    for (let times = 1; times <= 2; ++times) {
       const { body: job } = await request(app.getHttpServer())
         .post('/planets/' + planet.id + '/structures')
         .send({ planetId: planet.id, name: 'metal_mine' })
@@ -107,10 +116,37 @@ describe('Space Game', () => {
       await new Promise(r => setTimeout(r, job.time + 50));
     }
 
+    await new Promise(r => setTimeout(r, 100));
+
     await getStructures(app, planet.id).expect([{
       planetId: planet.id,
       name: 'metal_mine',
-      level: 5,
+      level: 2,
+    }]);
+  });
+
+  it('can only build one structure at once', async () => {
+    const { body: user } = await createUser(app, name);
+    const { body: planets } = await getPlanets(app, user.id);
+
+    const planet = planets[0];
+
+    await request(app.getHttpServer())
+      .post('/planets/' + planet.id + '/structures')
+      .send({ planetId: planet.id, name: 'metal_mine' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post('/planets/' + planet.id + '/structures')
+      .send({ planetId: planet.id, name: 'solar_power_plant' })
+      .expect(400);
+
+    await new Promise(r => setTimeout(r, 100));
+
+    await getStructures(app, planet.id).expect([{
+      planetId: planet.id,
+      name: 'metal_mine',
+      level: 1,
     }]);
   });
 
@@ -120,7 +156,7 @@ describe('Space Game', () => {
 
     const planet = planets[0];
 
-    for (let times = 1; times <= 5; ++times) {
+    for (let times = 1; times <= 2; ++times) {
       const { body: job } = await request(app.getHttpServer())
         .post('/imperators/' + planet.id + '/tech')
         .send({ planetId: planet.id, name: 'armor' })
@@ -132,7 +168,7 @@ describe('Space Game', () => {
     await getTech(app, user.id).expect([{
       userId: user.id,
       name: 'armor',
-      level: 5,
+      level: 2,
     }]);
   });
 

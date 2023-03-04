@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../imperators/imperators.entity';
 import { Planet } from './planet.entity';
@@ -10,6 +10,7 @@ import { Defense, DefenseType } from './defense.entity';
 import { Technology, TechnologyType } from './technology.entity';
 import { StructureJob } from './structure-job.entity';
 import { ResearchJob } from './research-job.entity';
+import { BuildTimeService } from './build-time.service';
 
 @Injectable()
 export class PlanetsService {
@@ -27,7 +28,9 @@ export class PlanetsService {
         @InjectRepository(Resources)
         private resourcesRepository: Repository<Resources>,
         @InjectRepository(Technology)
-        private technologiesRepository: Repository<Technology>,        
+        private technologiesRepository: Repository<Technology>,
+        @Inject(BuildTimeService)
+        private buildTimeService: BuildTimeService,
     ) { }
 
     async createInitialPlanet(user: User) {
@@ -112,9 +115,21 @@ export class PlanetsService {
     }
 
     async buildStructure(planetId: number, name: StructureType): Promise<StructureJob> {
-        
+        if(await this.structureJob(planetId)) {
+            throw new HttpException(new Error('already building'), HttpStatus.BAD_REQUEST);
+        }
+
+        const structure: Structure = await this.structuresRepository.findOne({
+            where: {
+                planet: {
+                    id: planetId
+                },
+                name: name,
+            }
+        });
+
         const job = new StructureJob();
-        job.time = 10; 
+        job.time = this.buildTimeService.getStructureBuildTime(name, (structure?.level || 0) + 1);
         job.planetId = planetId;
         job.start = new Date();
         job.name = name;

@@ -15,9 +15,17 @@ import { Defense } from './planets/defense.entity';
 import { Technology } from './planets/technology.entity';
 import { ResearchJob } from './planets/research-job.entity';
 import { StructureJob } from './planets/structure-job.entity';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(
+      {
+        load: [configuration],
+        isGlobal: true,
+      }
+    ),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       entities: [Defense, User, Planet, Structure, Resources, Resources, Ship, Technology, ResearchJob, StructureJob],
