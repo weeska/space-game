@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { PlanetsService } from 'src/planets/planets.service';
+import { PlanetsService } from '../planets/planets.service';
 import { ApiProperty } from '@nestjs/swagger';
-import { TechnologyType, TechnologyTypes } from 'src/planets/technology.entity';
+import { TechnologyType, TechnologyTypes } from '../planets/technology.entity';
 
 export class CreateUserDto {
     @ApiProperty({

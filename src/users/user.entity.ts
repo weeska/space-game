@@ -1,6 +1,6 @@
 
-import { Planet } from 'src/planets/planet.entity';
-import { Technology } from 'src/planets/technology.entity';
+import { Planet } from '../planets/planet.entity';
+import { Technology } from '../planets/technology.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()

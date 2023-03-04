@@ -1,5 +1,5 @@
 
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { Entity, Column, ManyToOne, PrimaryColumn } from 'typeorm';
 
 export const TechnologyTypes = ["armor", "shields", "weapons"] as const;
