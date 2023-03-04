@@ -89,7 +89,7 @@ describe('Space Game', () => {
 
   it('building structures', async () => {
     const { body: user } = await createUser(app, name);
-    const { body: planets } = await getPlanets(app, user.id)
+    const { body: planets } = await getPlanets(app, user.id);
 
     const planet = planets[0];
 
@@ -108,6 +108,28 @@ describe('Space Game', () => {
       level: 5,
     }]);
   });
+
+  it('researching technologies', async () => {
+    const { body: user } = await createUser(app, name);
+    const { body: planets } = await getPlanets(app, user.id)
+
+    const planet = planets[0];
+
+    for(let times = 1; times <= 5; ++times) {
+      const { body: job } = await request(app.getHttpServer())
+        .post('/imperators/' + planet.id + '/tech')
+        .send({ planetId: planet.id, name: 'armor' })
+        .expect(201);
+  
+      await new Promise(r => setTimeout(r, job.time + 50));
+    }
+
+    await getTech(app, user.id).expect([{
+      userId: user.id,
+      name: 'armor',
+      level: 5,
+    }]);
+  });  
 
   it('building ships', async () => {
     const { body: user } = await createUser(app, name);

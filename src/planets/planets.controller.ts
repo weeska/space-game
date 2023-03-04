@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { StructureType, StructureTypes } from './structures.entity';
 import { ShipType, ShipTypes } from './fleet.entity';
 import { DefenseType, DefenseTypes } from './defense.entity';
-import { StructureJob } from './structure-job';
+import { StructureJob } from './structure-job.entity';
 
 export class BuildStructureDto {
     @ApiProperty({

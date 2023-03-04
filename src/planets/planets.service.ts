@@ -8,7 +8,8 @@ import { Ship, ShipType } from './fleet.entity';
 import { Resources } from './resources.entity';
 import { Defense, DefenseType } from './defense.entity';
 import { Technology, TechnologyType } from './technology.entity';
-import { StructureJob } from './structure-job';
+import { StructureJob } from './structure-job.entity';
+import { ResearchJob } from './research-job.entity';
 
 @Injectable()
 export class PlanetsService {
@@ -230,16 +231,43 @@ export class PlanetsService {
         if(!planet) {
             throw new Error(`planet ${planetId} not found`);
         }
+        
+        const job = new ResearchJob();
+        job.time = 10; 
+        job.planetId = planetId;
+        job.start = new Date();
+        job.target = name;
+
+        //save job
+        setTimeout(async () => this.onResearchFinished(job), job.time);
+
+        return job;
+    }
+
+    async onResearchFinished(job: ResearchJob) {
+        const planet = await this.planetsRepository.findOne({
+            where: {
+                id: job.planetId
+            },
+            relations: {
+                user: true,
+            }
+        });
+
+        if(!planet) {
+            throw new Error(`planet ${job.planetId} not found`);
+        }
+
         let tech: Technology | undefined = await this.technologiesRepository.findOne({
             where: {
                 userId: planet.user.id,
-                name,
+                name: job.target,
             }
         });
 
         if(!tech) {
             tech = new Technology();
-            tech.name = name;
+            tech.name = job.target;
             tech.level = 1;
             tech.userId = planet.user.id;
 
@@ -247,8 +275,6 @@ export class PlanetsService {
             tech.level++;
         }
 
-        return this.technologiesRepository.save(tech);
+        await this.technologiesRepository.save(tech);
     }
-
-    
 }
