@@ -2,31 +2,31 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
+import { User } from './imperators.entity';
 
 @Injectable()
-export class UsersService {
+export class ImperatorsService {
     constructor(
         @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        private imperatorsRepository: Repository<User>,
     ) { }
 
     async create(name: string): Promise<User> {
         const user = new User();
         user.name = name;
 
-        return this.usersRepository.save(user);
+        return this.imperatorsRepository.save(user);
     }
 
     async findAll(): Promise<User[]> {
-        return this.usersRepository.find();
+        return this.imperatorsRepository.find();
     }
 
     async findOne(id: number): Promise<User> {
-        return this.usersRepository.findOneBy({ id });
+        return this.imperatorsRepository.findOneBy({ id });
     }
 
     async remove(id: string): Promise<void> {
-        await this.usersRepository.delete(id);
+        await this.imperatorsRepository.delete(id);
     }
 }

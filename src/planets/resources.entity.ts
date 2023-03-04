@@ -2,7 +2,6 @@
 
 
 import { Entity, Column, OneToOne, PrimaryColumn } from 'typeorm';
-import { Structure } from './structures.entity';
 import { Planet } from './planet.entity';
 
 @Entity()

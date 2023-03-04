@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { ImperatorsService } from './imperators.service';
 import { PlanetsService } from '../planets/planets.service';
 import { ApiProperty } from '@nestjs/swagger';
 import { TechnologyType, TechnologyTypes } from '../planets/technology.entity';
@@ -21,25 +21,30 @@ export class ResearchTechnologyDto {
     planetId: number;
 }
 
-@Controller('users')
-export class UsersController {
+@Controller('imperators')
+export class ImperatorsController {
 
     constructor(
-        @Inject(UsersService) private userService: UsersService,
+        @Inject(ImperatorsService) private imperatorservice: ImperatorsService,
         @Inject(PlanetsService) private planetsService: PlanetsService
     ) { }
 
     @Get()
     index() {
-        return this.userService.findAll();
+        return this.imperatorservice.findAll();
     }
 
     @Post()
     async create(@Body() dto: CreateUserDto) {
-        const user = await this.userService.create(dto.name);
+        const user = await this.imperatorservice.create(dto.name);
         await this.planetsService.createInitialPlanet(user);
         return user;
     }
+
+    @Get('/:userId/planets')
+    getPlanets(@Param('planetId') userId: number) {
+        return this.planetsService.planets(userId);
+    }    
 
     @Get('/:userId/tech')
     getTechnologies(@Param('userId') userId: number) {

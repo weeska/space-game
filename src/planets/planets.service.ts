@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../imperators/imperators.entity';
 import { Planet } from './planet.entity';
 import { Repository } from 'typeorm';
 import { Structure, StructureType } from './structures.entity';
@@ -8,10 +8,10 @@ import { Ship, ShipType } from './fleet.entity';
 import { Resources } from './resources.entity';
 import { Defense, DefenseType } from './defense.entity';
 import { Technology, TechnologyType } from './technology.entity';
+import { StructureJob } from './structure-job';
 
 @Injectable()
 export class PlanetsService {
-
     constructor(
         @InjectRepository(Planet)
         private planetsRepository: Repository<Planet>,
@@ -72,6 +72,16 @@ export class PlanetsService {
         });
     }
 
+    structureJob(planetId: number) {
+        return this.structuresRepository.find({
+            where: {
+                planet: {
+                    id: planetId
+                }
+            }
+        });
+    }
+
     ships(planetId: number) {
         return this.shipsRepository.find({
             where: {
@@ -100,36 +110,48 @@ export class PlanetsService {
         });
     }
 
-    async buildStructure(planetId: number, name: StructureType) {
-        let structure: Structure | undefined = await this.structuresRepository.findOne({
+    async buildStructure(planetId: number, name: StructureType): Promise<StructureJob> {
+        const job = new StructureJob();
+        job.time = 10; 
+        job.planetId = planetId;
+        job.start = new Date();
+        job.target = name;
+
+        //save job
+        setTimeout(async () => this.onStructureFinished(job), job.time);
+
+        return job;
+    }
+
+    async onStructureFinished(job: StructureJob) {
+        const planet = await this.planetsRepository.findOne({
             where: {
-                planet: {
-                    id: planetId
-                },
-                name,
+                id: job.planetId
             }
         });
 
-        if(!structure) {
-            const planet = await this.planetsRepository.findOne({
-                where: {
-                    id: planetId
-                }
-            });
-
-            if(!planet) {
-                throw new Error(`planet ${planetId} not found`);
-            }
-            structure = new Structure();
-            structure.planet = planet;
-            structure.name = name;
-            structure.level = 1;
-
-        } else {
-            structure.level++;
+        if(!planet) {
+            throw new Error(`planet ${job.planetId} not found`);
         }
 
-        return this.structuresRepository.save(structure);
+        let structure: Structure | undefined = await this.structuresRepository.findOne({
+            where: {
+                planet: {
+                    id: job.planetId
+                },
+                name: job.target,
+            }
+        });
+        if(!structure) {
+            structure = new Structure();
+            structure.planet = planet;
+            structure.name = job.target;
+            structure.level = 1;
+            
+        } else {
+            structure.level++;
+        }     
+        await this.structuresRepository.save(structure);
     }
 
     async buildShips(planetId: number, name: ShipType, amount: number) {

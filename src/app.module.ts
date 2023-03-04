@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
-import { UsersModule } from './users/users.module';
-import { User } from './users/user.entity';
+import { ImperatorsModule } from './imperators/imperators.module';
+import { User } from './imperators/imperators.entity';
 import { PlanetsController } from './planets/planets.controller';
 import { PlanetsModule } from './planets/planets.module';
 import { Planet } from './planets/planet.entity';
-import { UsersController } from './users/users.controller';
+import { ImperatorsController } from './imperators/imperators.controller';
 import { Structure } from './planets/structures.entity';
 import { Ship } from './planets/fleet.entity';
 import { Resources } from './planets/resources.entity';
@@ -22,10 +22,10 @@ import { Technology } from './planets/technology.entity';
       synchronize: true,
       database: './data.db'
     }),
-    UsersModule,
+    ImperatorsModule,
     PlanetsModule
   ],
-  controllers: [AppController, PlanetsController, UsersController],
+  controllers: [AppController, PlanetsController, ImperatorsController],
 })
 export class AppModule {
 }

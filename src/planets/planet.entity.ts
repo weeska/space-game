@@ -1,5 +1,5 @@
 
-import { User } from '../users/user.entity';
+import { User } from '../imperators/imperators.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Structure } from './structures.entity';
 import { Resources } from './resources.entity';

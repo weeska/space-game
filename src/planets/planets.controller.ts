@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { StructureType, StructureTypes } from './structures.entity';
 import { ShipType, ShipTypes } from './fleet.entity';
 import { DefenseType, DefenseTypes } from './defense.entity';
+import { StructureJob } from './structure-job';
 
 export class BuildStructureDto {
     @ApiProperty({
@@ -48,11 +49,6 @@ export class PlanetsController {
         @Inject(PlanetsService) private planetsService: PlanetsService
     ) { }
 
-    @Get('/:userId')
-    getPlanets(@Param('userId') userId: number) {
-        return this.planetsService.planets(userId);
-    }
-
     @Get('/:planetId/resources')
     getResources(@Param('planetId') planetId: number) {
         return this.planetsService.resources(planetId);
@@ -64,9 +60,12 @@ export class PlanetsController {
     }
 
     @Post('/:planetId/structures')
-    buildStructure(@Body() dto: BuildStructureDto) {
-        //TODO: verify name
+    buildStructure(@Body() dto: BuildStructureDto): Promise<StructureJob> {
         //TODO: verify user
+        if(!StructureTypes.includes(dto.name)) {
+            throw new Error(`Unknown StructureType ${dto.name}`);
+        }
+
         return this.planetsService.buildStructure(dto.planetId, dto.name);
     }
 

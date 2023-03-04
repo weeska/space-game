@@ -8,14 +8,14 @@ const databaseFile = './data.db';
 
 function createUser(app: INestApplication, name: string) {
   return request(app.getHttpServer())
-    .post('/users') //TODO: /imperators instead of /users
+    .post('/imperators') //TODO: /imperators instead of /imperators
     .send({ name })
     .expect(201)
 }
 
 function getPlanets(app: INestApplication, userId: number) {
   return request(app.getHttpServer())
-    .get('/planets/' + userId) //TODO: misleading, this is a userId, not a planetId
+    .get('/imperators/' + userId + '/planets') //TODO: misleading, this is a userId, not a planetId
     .expect(200);
 }
 
@@ -45,7 +45,7 @@ function getStructures(app: INestApplication, planetId: number) {
 
 function getTech(app: INestApplication, userId: number) {
   return request(app.getHttpServer())
-    .get('/users/' + userId + '/tech')
+    .get('/imperators/' + userId + '/tech')
     .expect(200);
 }
 
@@ -93,21 +93,19 @@ describe('Space Game', () => {
 
     const planet = planets[0];
 
-    await request(app.getHttpServer())
-      .post('/planets/' + planet.id + '/structures')
-      .send({ planetId: planet.id, name: 'metal_mine' })
-      .expect(201)
-      .expect({
-        planet: { id: planet.id, name: "e2e imperator's Home" },
-        name: 'metal_mine',
-        level: 1,
-        planetId: planet.id,
-      });
+    for(let times = 1; times <= 5; ++times) {
+      const { body: job } = await request(app.getHttpServer())
+        .post('/planets/' + planet.id + '/structures')
+        .send({ planetId: planet.id, name: 'metal_mine' })
+        .expect(201);
+  
+      await new Promise(r => setTimeout(r, job.time + 50));
+    }
 
     await getStructures(app, planet.id).expect([{
       planetId: planet.id,
       name: 'metal_mine',
-      level: 1,
+      level: 5,
     }]);
   });
 
