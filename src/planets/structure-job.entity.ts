@@ -6,5 +6,5 @@ import { BaseJob } from './base-job.entity';
 @Entity()
 export class StructureJob extends BaseJob {
   @Column()
-  target: StructureType;
+  name: StructureType;
 }

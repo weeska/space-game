@@ -18,6 +18,8 @@ export class PlanetsService {
         private planetsRepository: Repository<Planet>,
         @InjectRepository(Structure)
         private structuresRepository: Repository<Structure>,
+        @InjectRepository(StructureJob)
+        private structureJobsRepository: Repository<StructureJob>,        
         @InjectRepository(Ship)
         private shipsRepository: Repository<Ship>,
         @InjectRepository(Defense)
@@ -74,11 +76,9 @@ export class PlanetsService {
     }
 
     structureJob(planetId: number) {
-        return this.structuresRepository.find({
+        return this.structureJobsRepository.findOne({
             where: {
-                planet: {
-                    id: planetId
-                }
+                planetId,
             }
         });
     }
@@ -112,14 +112,15 @@ export class PlanetsService {
     }
 
     async buildStructure(planetId: number, name: StructureType): Promise<StructureJob> {
+        
         const job = new StructureJob();
         job.time = 10; 
         job.planetId = planetId;
         job.start = new Date();
-        job.target = name;
+        job.name = name;
 
-        //save job
-        setTimeout(async () => this.onStructureFinished(job), job.time);
+        await this.structureJobsRepository.save(job);
+        setTimeout(async () => await this.onStructureFinished(job), job.time);
 
         return job;
     }
@@ -140,19 +141,22 @@ export class PlanetsService {
                 planet: {
                     id: job.planetId
                 },
-                name: job.target,
+                name: job.name,
             }
         });
+
         if(!structure) {
             structure = new Structure();
             structure.planet = planet;
-            structure.name = job.target;
+            structure.name = job.name;
             structure.level = 1;
             
         } else {
             structure.level++;
-        }     
+        }
+
         await this.structuresRepository.save(structure);
+        await this.structureJobsRepository.delete(job.planetId);
     }
 
     async buildShips(planetId: number, name: ShipType, amount: number) {
@@ -236,7 +240,7 @@ export class PlanetsService {
         job.time = 10; 
         job.planetId = planetId;
         job.start = new Date();
-        job.target = name;
+        job.name = name;
 
         //save job
         setTimeout(async () => this.onResearchFinished(job), job.time);
@@ -261,13 +265,13 @@ export class PlanetsService {
         let tech: Technology | undefined = await this.technologiesRepository.findOne({
             where: {
                 userId: planet.user.id,
-                name: job.target,
+                name: job.name,
             }
         });
 
         if(!tech) {
             tech = new Technology();
-            tech.name = job.target;
+            tech.name = job.name;
             tech.level = 1;
             tech.userId = planet.user.id;
 

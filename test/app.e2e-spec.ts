@@ -93,12 +93,17 @@ describe('Space Game', () => {
 
     const planet = planets[0];
 
-    for(let times = 1; times <= 5; ++times) {
+    for (let times = 1; times <= 5; ++times) {
       const { body: job } = await request(app.getHttpServer())
         .post('/planets/' + planet.id + '/structures')
         .send({ planetId: planet.id, name: 'metal_mine' })
         .expect(201);
-  
+
+      await request(app.getHttpServer())
+        .get('/planets/' + planet.id + '/jobs/structure')
+        .expect(200)
+        .expect(job);
+
       await new Promise(r => setTimeout(r, job.time + 50));
     }
 
@@ -115,12 +120,12 @@ describe('Space Game', () => {
 
     const planet = planets[0];
 
-    for(let times = 1; times <= 5; ++times) {
+    for (let times = 1; times <= 5; ++times) {
       const { body: job } = await request(app.getHttpServer())
         .post('/imperators/' + planet.id + '/tech')
         .send({ planetId: planet.id, name: 'armor' })
         .expect(201);
-  
+
       await new Promise(r => setTimeout(r, job.time + 50));
     }
 
@@ -129,7 +134,7 @@ describe('Space Game', () => {
       name: 'armor',
       level: 5,
     }]);
-  });  
+  });
 
   it('building ships', async () => {
     const { body: user } = await createUser(app, name);
@@ -147,5 +152,5 @@ describe('Space Game', () => {
       name: 'light_fighter',
       amount: 16,
     }]);
-  });  
+  });
 });

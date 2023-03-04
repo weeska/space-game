@@ -5,6 +5,7 @@ import { StructureType, StructureTypes } from './structures.entity';
 import { ShipType, ShipTypes } from './fleet.entity';
 import { DefenseType, DefenseTypes } from './defense.entity';
 import { StructureJob } from './structure-job.entity';
+import { ResearchJob } from './research-job.entity';
 
 export class BuildStructureDto {
     @ApiProperty({
@@ -67,6 +68,11 @@ export class PlanetsController {
         }
 
         return this.planetsService.buildStructure(dto.planetId, dto.name);
+    }
+
+    @Get('/:planetId/jobs/structure')
+    researchJob(@Param('planetId') planetId: number): Promise<StructureJob> {
+        return this.planetsService.structureJob(planetId);
     }
 
     @Get('/:planetId/ships')

@@ -6,5 +6,5 @@ import { TechnologyType } from './technology.entity';
 @Entity()
 export class ResearchJob extends BaseJob {
   @Column()
-  target: TechnologyType;
+  name: TechnologyType;
 }

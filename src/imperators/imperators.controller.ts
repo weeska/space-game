@@ -3,6 +3,7 @@ import { ImperatorsService } from './imperators.service';
 import { PlanetsService } from '../planets/planets.service';
 import { ApiProperty } from '@nestjs/swagger';
 import { TechnologyType, TechnologyTypes } from '../planets/technology.entity';
+import { ResearchJob } from 'src/planets/research-job.entity';
 
 export class CreateUserDto {
     @ApiProperty({
@@ -52,7 +53,7 @@ export class ImperatorsController {
     }
 
     @Post('/:userId/tech')
-    research(@Body() dto: ResearchTechnologyDto) {
+    research(@Body() dto: ResearchTechnologyDto): Promise<ResearchJob> {
         return this.planetsService.researchTechnology(dto.planetId, dto.name);
     }    
 }
